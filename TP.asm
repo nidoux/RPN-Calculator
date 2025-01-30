@@ -103,3 +103,27 @@ PILE1 ALLOC32 15
 calc ASSIGN8 4, 0x20, 3, 0x20, 7, 0x20, 0x2b, 0x2a, 0x20;Ajout de 0x20 pour conclure le truc ?
 
 
+;Fonction decodeASCII avec R0 = input:
+
+MOV R0, #0x22
+
+BL decodeChiffreASCII;Appel de la fonction
+B fin
+
+
+;Fonction decode chiffres ASCII
+decodeChiffreASCII
+CMP R0, #0x30
+BCS sup30
+BX LR;Sors de la fonction si input < 0x30
+
+
+sup30
+CMP R0, #0x39
+BLS valeurOK
+BX LR;Sors de la fonction si input > 0x39
+
+valeurOK
+SUB R0, R0, #0x30
+BX LR;Sors de la fonction après avoir convertit input
+;Fin decodeChiffreASCII
