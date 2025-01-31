@@ -87,12 +87,13 @@ MUL R0, R6, R7
 PUSH {R0}
 BX LR
 
-;divise
-;POP {R6}
-;POP {R7}
-;DIV R0, R6, R7
-;PUSH {R0}
-;BX LR
+divise
+SUB R1, R1, R2
+ADD R0, R0, #0x01
+CMP R1, R2
+BGE divise
+BX LR
+
 
 ;Fonction decode chiffres ASCII
 decodeChiffreASCII
