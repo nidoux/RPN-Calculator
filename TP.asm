@@ -15,6 +15,10 @@ ADD SP, SP, #0x78
 MOV R10, #10;Juste stock 10 pour x10
 LDR R1, =calc;Adresse debut calcul
 
+B whileSep
+
+fin
+B fin
 
 ;Convertit caractères en int et place dans PILE1 chaque int
 whileSep
@@ -94,12 +98,12 @@ BX LR
 decodeChiffreASCII
 ;PUSH {R0, R1, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14};Sauvegarde contexte
 CMP R2, #0x30
-BCS sup30
+BCS inf39
 ;POP {R0, R1, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14}
 BX LR;Sors de la fonction si input < 0x30
 
 
-sup30
+inf39
 CMP R2, #0x39
 BLS valeurOK
 ;POP {R0, R1, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14}
@@ -111,9 +115,6 @@ SUB R2, R2, #0x30
 BX LR;Sors de la fonction après avoir convertit input
 ;Fin decodeChiffreASCII
 
-fin
-
-B fin
 
 SECTION DATA
 
