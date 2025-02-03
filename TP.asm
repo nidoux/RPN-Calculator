@@ -18,7 +18,10 @@ LDR R1, =calc;Adresse debut calcul
 B whileSep
 
 fin
-B fin
+POP {R0}
+
+vraieFin
+B vraieFin
 
 ;Convertit caractères en int et place dans PILE1 chaque int
 whileSep
@@ -32,6 +35,8 @@ BEQ executeCalc
 CMP R2, #0x2d;-
 BEQ executeCalc
 CMP R2, #0x2f;/
+BEQ executeCalc
+CMP R2, #0x5e;puissance
 BEQ executeCalc
 
 CMP R2, #0x20
@@ -47,6 +52,7 @@ B whileSep
 ;FIN whileSep
 
 executeCalc
+MOV R0, #0x00;R0 est un registre tampon utilisé dans les différentes fonctions
 LDRB R2, [R1]
 
 CMP R2, #0x2a;*
@@ -57,6 +63,12 @@ BLEQ additionne
 
 CMP R2, #0x2d;-
 BLEQ soustrait
+
+CMP R2, #0x5e
+POPEQ {R7}
+POPEQ {R6}
+MOVEQ R0, R6
+BLEQ puissance
 
 CMP R2, #0x20
 BLEQ fin
@@ -87,12 +99,21 @@ MUL R0, R6, R7
 PUSH {R0}
 BX LR
 
-divise
-SUB R1, R1, R2
-ADD R0, R0, #0x01
-CMP R1, R2
-BGE divise
-BX LR
+;divise
+;SUB R1, R1, R2
+;ADD R0, R0, #0x01
+;CMP R1, R2
+;BGE divise
+;BX LR
+
+
+puissance
+CMP R7, #1
+PUSHEQ {R0}
+BXEQ LR
+SUB R7, R7, #1
+MUL R0, R0, R6
+B puissance
 
 
 ;Fonction decode chiffres ASCII
@@ -123,4 +144,6 @@ PILE1 ALLOC32 30
 
 ;calc ASSIGN8 2, 0x20, 4, 0x20, 3, 0x20, 7, 0x20, 0x2b, 0x2a, 0x2a, 0x20;Ajout de 0x20 pour conclure le truc ?
 
-calc ASSIGN8 0x31, 0x30, 0x20, 0x32, 0x30, 0x20, 0x2b, 0x20
+;calc ASSIGN8 0x31, 0x30, 0x20, 0x32, 0x30, 0x20, 0x2b, 0x20
+
+calc ASSIGN8 0x36, 0x20, 0x35, 0x20, 0x5e, 0x20
