@@ -64,11 +64,17 @@ BLEQ additionne
 CMP R2, #0x2d;-
 BLEQ soustrait
 
-CMP R2, #0x5e
+CMP R2, #0x5e;^
 POPEQ {R7}
 POPEQ {R6}
 MOVEQ R0, R6
 BLEQ puissance
+
+CMP R2, #0x2f;/
+POPEQ {R6}
+POPEQ {R7}
+CMP R7, R6
+BLGT divise
 
 CMP R2, #0x20
 BLEQ fin
@@ -99,13 +105,13 @@ MUL R0, R6, R7
 PUSH {R0}
 BX LR
 
-;divise
-;SUB R1, R1, R2
-;ADD R0, R0, #0x01
-;CMP R1, R2
-;BGE divise
-;BX LR
-
+divise
+SUB R7, R7, R6
+ADD R0, R0, #0x01
+CMP R7, #0x00
+BNE divise
+PUSH {R0}
+BX LR
 
 puissance
 CMP R7, #1
