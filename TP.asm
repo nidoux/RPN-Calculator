@@ -38,6 +38,8 @@ CMP R2, #0x2f;/
 BEQ executeCalc
 CMP R2, #0x5e;puissance
 BEQ executeCalc
+CMP R2, #0x25;modulo
+BEQ executeCalc
 CMP R2, #0x5f;negatif
 MOVEQ R12, #0x01
 
@@ -84,6 +86,11 @@ POPEQ {R7}
 POPEQ {R6}
 BLEQ divise
 
+CMP R2, #0x25;modulo
+POPEQ {R7}
+POPEQ {R6}
+BLEQ modulo
+
 CMP R2, #0x20
 BLEQ fin
 
@@ -129,6 +136,12 @@ SUB R7, R7, #1
 MUL R0, R0, R6
 B puissance
 
+modulo
+CMP R7, R6
+SUBGE R7, R7, R6
+BGE modulo
+PUSH {R7}
+BX LR
 
 ;Fonction decode chiffres ASCII
 decodeChiffreASCII
