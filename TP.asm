@@ -66,25 +66,25 @@ executeCalc
 MOV R0, #0x00;R0 est un registre tampon utilisé dans les différentes fonctions
 LDRB R2, [R1]
 
-CMP R2, #0x2a;*
-BLEQ multiplie
-
 CMP R2, #0x2b;+
 BLEQ additionne
 
 CMP R2, #0x2d;-
 BLEQ soustrait
 
-CMP R2, #0x5e;^
-POPEQ {R7}
-POPEQ {R6}
-MOVEQ R0, R6
-BLEQ puissance
+CMP R2, #0x2a;*
+BLEQ multiplie
 
 CMP R2, #0x2f;/
 POPEQ {R7}
 POPEQ {R6}
 BLEQ divise
+
+CMP R2, #0x5e;^
+POPEQ {R7}
+POPEQ {R6}
+MOVEQ R0, R6
+BLEQ puissance
 
 CMP R2, #0x25;modulo
 POPEQ {R7}
@@ -100,29 +100,29 @@ B executeCalc
 
 
 additionne
-POP {R6}
 POP {R7}
+POP {R6}
 ADD R0, R6, R7
 PUSH {R0}
 BX LR
 
 soustrait
-POP {R6}
 POP {R7}
-SUB R0, R7, R6
+POP {R6}
+SUB R0, R6, R7
 PUSH {R0}
 BX LR
 
 multiplie
-POP {R6}
 POP {R7}
+POP {R6}
 MUL R0, R6, R7
 PUSH {R0}
 BX LR
 
 divise
-CMP R7, R6
-SUBGE R7, R7, R6
+CMP R6, R7
+SUBGE R6, R6, R7
 ADDGE R0, R0, #0x01
 BGE divise
 PUSH {R0}
@@ -137,10 +137,10 @@ MUL R0, R0, R6
 B puissance
 
 modulo
-CMP R7, R6
-SUBGE R7, R7, R6
+CMP R6, R7
+SUBGE R6, R6, R7
 BGE modulo
-PUSH {R7}
+PUSH {R6}
 BX LR
 
 ;Fonction decode chiffres ASCII
