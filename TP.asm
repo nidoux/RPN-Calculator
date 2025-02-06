@@ -18,85 +18,88 @@ LDR R1, =calc;Adresse debut calcul
 B whileSep
 
 fin
-POP {R0}
-
-vraieFin
-B vraieFin
+B fin
 
 ;Convertit caractères en int et place dans PILE1 chaque int
 whileSep
+MOV R0, #0x00;R0 est un registre tampon utilisé dans les différentes fonctions
 LDRB R2, [R1];Charge premier octet
 BL decodeChiffreASCII
 
-CMP R2, #0x2a;*
-BEQ executeCalc
-CMP R2, #0x2b;+
-BEQ executeCalc
-CMP R2, #0x2d;-
-BEQ executeCalc
-CMP R2, #0x2f;/
-BEQ executeCalc
-CMP R2, #0x5e;puissance
-BEQ executeCalc
-CMP R2, #0x25;modulo
-BEQ executeCalc
-CMP R2, #0x5f;negatif
-MOVEQ R12, #0x01
-
-
-CMP R2, #0x20
-CMPEQ R12, #0x01
-MOVEQ R12, #-1
-MULEQ R5, R5, R12
-MOVEQ R12, #0x00
-CMP R2, #0x20
-PUSHEQ {R5}
-MOVEQ R5, #0
-;Ou alors BEQ whileSep et ADD au lieu de ADDNE
-
-CMPNE R2, #0x5f
-MUL R5, R5, R10
-ADDNE R5, R5, R2
-
-ADD R1, R1, #1
-B whileSep
-;FIN whileSep
-
-executeCalc
-MOV R0, #0x00;R0 est un registre tampon utilisé dans les différentes fonctions
-LDRB R2, [R1]
-
-CMP R2, #0x2b;+
-BLEQ additionne
-
-CMP R2, #0x2d;-
-BLEQ soustrait
+CMP R2, #0x3d;= fin d'opération
+POPEQ {R0}
+BEQ fin
 
 CMP R2, #0x2a;*
-BLEQ multiplie
+ADDEQ R4, R4, #1
+ADDEQ R1, R1, #1
+BEQ multiplie
+
+CMP R2, #0x2b;+
+ADDEQ R4, R4, #1
+ADDEQ R1, R1, #1
+BEQ additionne
+
+CMP R2, #0x2d;-
+ADDEQ R4, R4, #1
+ADDEQ R1, R1, #1
+BEQ soustrait
 
 CMP R2, #0x2f;/
 POPEQ {R7}
 POPEQ {R6}
-BLEQ divise
+ADDEQ R4, R4, #1
+ADDEQ R1, R1, #1
+BEQ divise
 
-CMP R2, #0x5e;^
+CMP R2, #0x5e;puissance
 POPEQ {R7}
 POPEQ {R6}
 MOVEQ R0, R6
-BLEQ puissance
+ADDEQ R4, R4, #1
+ADDEQ R1, R1, #1
+BEQ puissance
 
 CMP R2, #0x25;modulo
 POPEQ {R7}
 POPEQ {R6}
+ADDEQ R4, R4, #1
+ADDEQ R1, R1, #1
 BLEQ modulo
 
+CMP R2, #0x5f;operateur negatif
+MOVEQ R12, #0x01;PEUT ETRE UTILISER R0 EN REG TAMPON
+ADDEQ R1, R1, #1
+BEQ whileSep
+
+CMP R2, #0x20;espace (separateur)
+
+CMPEQ R12, #0x01;Verif si nombre est signalé comme négatif
+MOVEQ R12, #-1
+MULEQ R5, R5, R12;On passe le nombre en négatif
+
+CMP R2, #0x20;Reverif
+CMPEQ R4, #0
+PUSHEQ {R5}
+MOVEQ R5, #0;Reset R5 pour le prochain calcul
+MOVEQ R12, #0x00;Reset R12 pour le prochain nombre
+
 CMP R2, #0x20
-BLEQ fin
+MOVEQ R4, #0
+
 
 ADD R1, R1, #1
-B executeCalc
-;FIN executeCALC
+
+BEQ whileSep
+
+
+MUL R5, R5, R10
+ADD R5, R5, R2
+
+
+
+B whileSep
+;FIN whileSep
 
 
 additionne
@@ -104,21 +107,21 @@ POP {R7}
 POP {R6}
 ADD R0, R6, R7
 PUSH {R0}
-BX LR
+B whileSep
 
 soustrait
 POP {R7}
 POP {R6}
 SUB R0, R6, R7
 PUSH {R0}
-BX LR
+B whileSep
 
 multiplie
 POP {R7}
 POP {R6}
 MUL R0, R6, R7
 PUSH {R0}
-BX LR
+B whileSep
 
 divise
 CMP R6, R7
@@ -126,12 +129,12 @@ SUBGE R6, R6, R7
 ADDGE R0, R0, #0x01
 BGE divise
 PUSH {R0}
-BX LR
+B whileSep
 
 puissance
 CMP R7, #1
 PUSHEQ {R0}
-BXEQ LR
+BEQ whileSep
 SUB R7, R7, #1
 MUL R0, R0, R6
 B puissance
@@ -141,7 +144,7 @@ CMP R6, R7
 SUBGE R6, R6, R7
 BGE modulo
 PUSH {R6}
-BX LR
+B whileSep
 
 ;Fonction decode chiffres ASCII
 decodeChiffreASCII
@@ -170,12 +173,18 @@ SECTION DATA
 PILE1 ALLOC32 30
 
 
-;calc ASSIGN8 0x32, 0x20, 0x34, 0x20, 0x33, 0x20, 0x37, 0x20, 0x2b, 0x2a, 0x2a, 0x20;
+;calc ASSIGN8 0x32, 0x20, 0x34, 0x20, 0x33, 0x20, 0x37, 0x20, 0x2b, 0x2a, 0x2a, 0x3d;2 4 3 7  + * *
 
-;calc ASSIGN8 0x31, 0x30, 0x20, 0x32, 0x30, 0x20, 0x2b, 0x20;1E
+;calc ASSIGN8 0x31, 0x30, 0x20, 0x32, 0x30, 0x20, 0x2b, 0x3d;1E
 
-;calc ASSIGN8 0x36, 0x20, 0x35, 0x20, 0x5e, 0x20;1E60
+;calc ASSIGN8 0x36, 0x20, 0x35, 0x20, 0x5e, 0x3d;1E60
 
-;calc ASSIGN8 0x32, 0x20, 0x33, 0x20, 0x37, 0x20, 0x2b, 0x2f, 0x20;0x5
+;calc ASSIGN8 0x32, 0x35, 0x20, 0x35, 0x20, 0x2f, 0x3d;0x5
 
-calc ASSIGN8 0x35, 0x20, 0x32, 0x35, 0x20, 0x2f, 0x20;0x5
+
+;calc ASSIGN8 6, 0x20, 0x5f, 2, 0, 0x20, 0x2b, 0x3d
+;calc ASSIGN8 0x33, 0x20, 0x37, 0x20, 0x2b, 0x20, 0x32, 0x20, 0x2f, 0x3d;(3+7)/2
+
+;calc ASSIGN8 0x36, 0x20, 0x32, 0x20, 0x2f, 0x20, 0x37, 0x20, 0x2b, 0x3d;6 2 / 3 +
+
+;calc ASSIGN8 1, 0, 0, 0x20, 3, 0, 0x20, 2, 0, 0x20, 0x2b, 0x2f, 0x3d;100/(30+20)
