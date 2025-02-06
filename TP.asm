@@ -38,13 +38,21 @@ CMP R2, #0x2f;/
 BEQ executeCalc
 CMP R2, #0x5e;puissance
 BEQ executeCalc
+CMP R2, #0x5f;negatif
+MOVEQ R12, #0x01
 
 
+CMP R2, #0x20
+CMPEQ R12, #0x01
+MOVEQ R12, #-1
+MULEQ R5, R5, R12
+MOVEQ R12, #0x00
 CMP R2, #0x20
 PUSHEQ {R5}
 MOVEQ R5, #0
 ;Ou alors BEQ whileSep et ADD au lieu de ADDNE
 
+CMPNE R2, #0x5f
 MUL R5, R5, R10
 ADDNE R5, R5, R2
 
@@ -158,4 +166,3 @@ PILE1 ALLOC32 30
 ;calc ASSIGN8 0x32, 0x20, 0x33, 0x20, 0x37, 0x20, 0x2b, 0x2f, 0x20;0x5
 
 calc ASSIGN8 0x35, 0x20, 0x32, 0x35, 0x20, 0x2f, 0x20;0x5
-
