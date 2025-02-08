@@ -133,6 +133,7 @@ BLT numerateurNegatif
 
 numerateurPositif
 CMP R7, #0
+BEQ fin;Si on divise par 0, on termine immédiatement le programme
 MOVGE R12, #1
 MOVLT R12, #-1;Registre tampon à -1 dans le cas d'une division negative
 MULLT R7, R7, R12;On prend la valeur positive
@@ -140,6 +141,7 @@ B executeDivision
 
 numerateurNegatif
 CMP R7, #0
+BEQ fin;Si on divise par 0, on termine immédiatement le programme
 MULLT R7, R7, R12;R12 déjà à -1 car numerateur negatif
 MOVLT R12, #1
 B executeDivision
@@ -157,8 +159,8 @@ B whileSep
 
 puissance
 CMP R7, #1
-PUSHEQ {R0}
-BEQ whileSep
+PUSHLE {R0}
+BLE whileSep
 SUB R7, R7, #1
 MUL R0, R0, R6
 B puissance

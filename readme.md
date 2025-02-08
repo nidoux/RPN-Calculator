@@ -25,9 +25,9 @@ Doc simulateur : https://ginhac.com/teaching/archi/manuel-simulateurARM.pdf
 
 Implémenter :
 - [ ] Rendre le code plus lisible
-- [ ] Division par 0
 - [ ] Gestion des erreurs
 - [ ] Valeur absolue
+- [x] Division par 0
 - [x] Division / Multiplication négative
 - [x] Addition / Soustraction négatifs
-- [x] Puissances paires / impaires (pas négatives)
+- [x] Puissances paires / impaires / nulles (fait puissance 0 si négative)
