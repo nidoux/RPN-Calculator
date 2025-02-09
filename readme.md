@@ -21,7 +21,7 @@ Doc simulateur : https://ginhac.com/teaching/archi/manuel-simulateurARM.pdf
 
 - Exemple :
     * Notation classique : notation polonaise inverse : version hexadécimale
-    * (3 + 7) / (-2) : 3 7 + _2 / : `calc ASSIGN8 0x33, 0x20, 0x37, 0x20, 0x2b, 0x20, 0x32, 0x20, 0x2f, 0x3d;`
+    * (3 + 7) / (-2) : 3 7 + _2 / : `calc ASSIGN8 0x33, 0x20, 0x37, 0x20, 0x2b, 0x20, 0x5f, 0x32, 0x20, 0x2f, 0x3d;`
 
 Implémenter :
 - [ ] Rendre le code plus lisible
