@@ -118,9 +118,7 @@ B whileSep
 valeur_absolue;0x7c
 POP {R7}
 CMP R7, #0x00
-MOV R6, #-1
-MULMI R7, R7, R6
-MOV R0, R7
+RSBMI R7, R7, #0x00
 PUSH {R7}
 B whileSep
 
