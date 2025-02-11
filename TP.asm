@@ -44,6 +44,10 @@ CMP R2, #0x2d;-
 ADDEQ R4, R4, #1
 BEQ soustrait
 
+CMP R2, #0x7c;valeur_absolue
+ADDEQ R4, R4, #1
+BLEQ valeur_absolue
+
 CMP R2, #0x2f;/
 POPEQ {R7}
 POPEQ {R6}
@@ -66,10 +70,6 @@ BLEQ modulo
 CMP R2, #0x5f;operateur negatif
 MOVEQ R12, #-1;R12 signal un nombre négatif pour faire le nécessaire au PUSH dans la pile
 BEQ whileSep
-
-CMP R2, #0x7c;valeur_absolue
-ADDEQ R4, R4, #1
-BLEQ valeur_absolue
 
 ;DEBUT ESPACE
 CMP R2, #0x20;espace (separateur)
