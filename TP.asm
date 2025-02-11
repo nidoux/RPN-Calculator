@@ -126,23 +126,23 @@ B whileSep
 divise;0x2f
 CMP R6, #0
 BGE numerateurPositif
-MOVLT R12, #-1;Registre tampon à -1 dans le cas d'une division negative
-MULLT R6, R6, R12
+MOVLT R11, #-1;Registre tampon à -1 dans le cas d'une division negative
+MULLT R6, R6, R11
 BLT numerateurNegatif
 
 numerateurPositif
 CMP R7, #0
 BEQ fin;Si on divise par 0, on termine immédiatement le programme
-MOVGE R12, #1
-MOVLT R12, #-1
-MULLT R7, R7, R12;On prend la valeur positive
+MOVGE R11, #1
+MOVLT R11, #-1
+MULLT R7, R7, R11;On prend la valeur positive
 B executeDivision
 
 numerateurNegatif
 CMP R7, #0
 BEQ fin;Si on divise par 0, on termine immédiatement le programme
-MULLT R7, R7, R12;R12 déjà à -1 car numerateur negatif
-MOVLT R12, #1
+MULLT R7, R7, R11;R11 déjà à -1 car numerateur negatif
+MOVLT R11, #1
 B executeDivision
 
 executeDivision;Execute la division en valeur absolue
@@ -150,7 +150,7 @@ CMP R6, R7
 SUBGE R6, R6, R7
 ADDGE R0, R0, #0x01
 BGE executeDivision
-MUL R0, R0, R12;Rétabli le signe négatif si besoin
+MUL R0, R0, R11;Rétabli le signe négatif si besoin
 PUSH {R0}
 B whileSep
 ;FIN DIVISION
