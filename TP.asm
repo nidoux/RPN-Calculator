@@ -46,7 +46,7 @@ BEQ soustrait
 
 CMP R2, #0x7c;valeur_absolue
 ADDEQ R4, R4, #1
-BLEQ valeur_absolue
+BEQ valeur_absolue
 
 CMP R2, #0x2f;/
 POPEQ {R7}
@@ -65,7 +65,7 @@ CMP R2, #0x25;modulo
 POPEQ {R7}
 POPEQ {R6}
 ADDEQ R4, R4, #1
-BLEQ modulo
+BEQ modulo
 
 CMP R2, #0x5f;operateur negatif
 MOVEQ R12, #-1;R12 signal un nombre négatif pour faire le nécessaire au PUSH dans la pile
@@ -76,7 +76,6 @@ CMP R2, #0x20;espace (separateur)
 
 MULEQ R5, R5, R12;On passe le nombre en négatif si R12=-1
 
-CMP R2, #0x20;Reverif
 CMPEQ R4, #0;Si aucune opération n'a eu lieu avant, R4=0, on peut PUSH le nombre
 PUSHEQ {R5}
 MOVEQ R5, #0;Reset R5 pour le prochain nombre
