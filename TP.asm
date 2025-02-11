@@ -11,6 +11,7 @@ main
 LDR SP,=PILE
 ADD SP, SP, #0x78
 
+MOV R12, #1
 MOV R10, #10;Juste stock 10 pour x10
 LDR R1, =calc;Adresse debut calcul
 
@@ -22,7 +23,9 @@ B fin
 ;DEBUT whileSep
 whileSep;Lit chaque insctruction du calcul (1 octet), place dans la pile les chiffres concaténés et effectue les calculs
 MOV R0, #0x00;R0 est un registre tampon utilisé dans les différentes fonctions
+
 LDRB R2, [R1];Charge premier octet dans R2
+ADD R1, R1, #1;Passe à l'octet suivant du calcul
 BL decodeChiffreASCII;Convertit les chiffres ASCII si besoin
 
 CMP R2, #0x3d;= symbole de fin d'opération
@@ -31,24 +34,20 @@ BEQ fin
 
 CMP R2, #0x2a;*
 ADDEQ R4, R4, #1;Signal qu'une operation a eu lieu
-ADDEQ R1, R1, #1;Passe à l'octet suivant du calcul
 BEQ multiplie
 
 CMP R2, #0x2b;+
 ADDEQ R4, R4, #1
-ADDEQ R1, R1, #1
 BEQ additionne
 
 CMP R2, #0x2d;-
 ADDEQ R4, R4, #1
-ADDEQ R1, R1, #1
 BEQ soustrait
 
 CMP R2, #0x2f;/
 POPEQ {R7}
 POPEQ {R6}
 ADDEQ R4, R4, #1
-ADDEQ R1, R1, #1
 BEQ divise
 
 CMP R2, #0x5e;puissance
@@ -56,19 +55,16 @@ POPEQ {R7}
 POPEQ {R6}
 MOVEQ R0, R6
 ADDEQ R4, R4, #1
-ADDEQ R1, R1, #1
 BEQ puissance
 
 CMP R2, #0x25;modulo
 POPEQ {R7}
 POPEQ {R6}
 ADDEQ R4, R4, #1
-ADDEQ R1, R1, #1
 BLEQ modulo
 
 CMP R2, #0x5f;operateur negatif
-MOVEQ R12, #0x01;R12 signal un nombre négatif pour faire le nécessaire au PUSH dans la pile
-ADDEQ R1, R1, #1
+MOVEQ R12, #-1;R12 signal un nombre négatif pour faire le nécessaire au PUSH dans la pile
 BEQ whileSep
 
 CMP R2, #0x7c;valeur_absolue
@@ -78,19 +74,17 @@ BLEQ valeur_absolue
 ;DEBUT ESPACE
 CMP R2, #0x20;espace (separateur)
 
-CMPEQ R12, #0x01;Verif si nombre est signalé comme négatif
-MOVEQ R12, #-1
-MULEQ R5, R5, R12;On passe le nombre en négatif
+MULEQ R5, R5, R12;On passe le nombre en négatif si R12=-1
 
 CMP R2, #0x20;Reverif
 CMPEQ R4, #0;Si aucune opération n'a eu lieu avant, R4=0, on peut PUSH le nombre
 PUSHEQ {R5}
 MOVEQ R5, #0;Reset R5 pour le prochain nombre
-MOVEQ R12, #0x00;Reset R12 pour le prochain nombre
+MOVEQ R12, #0x01;Reset R12 pour le prochain nombre
 
 CMP R2, #0x20;Reverif
 MOVEQ R4, #0;Reset R0 pour 
-ADD R1, R1, #1;Passe à l'octet suivant du calcul
+
 BEQ whileSep
 ;FIN ESPACE
 
